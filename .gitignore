@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# dbt
+target/
+dbt_packages/
+logs/
+.dbt/
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db

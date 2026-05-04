@@ -1,0 +1,7 @@
+name: 'atmosflow_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'atmosflow_analytics'
+
+model-paths: ["models"]
