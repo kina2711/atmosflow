@@ -113,7 +113,7 @@ As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
 │   ├── config.py                       # Database and Kafka connection settings
 │   ├── db_client.py                    # Database wrapper implementing high-performance Batch Inserts
 │   ├── kafka_consumer.py               # Kafka Consumer logic with Group ID and Offset management
-│   ├── main.//py                       # Execution entry point: Poll Kafka -> Batching -> Load to Postgres
+│   ├── main.py                       # Execution entry point: Poll Kafka -> Batching -> Load to Postgres
 │   └── Dockerfile                      # Containerization for scalable data loading
 │
 ├── dags/                               # [Orchestration] Workflow Automation
