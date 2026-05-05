@@ -6,11 +6,11 @@
 </p>
 <p align="center">
 <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-<img src="https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-//badge&logo=apache-kafka&logoColor=white" alt="Kafka">
+<img src="https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white" alt="Kafka">
 <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
 <img src="https://img.shields.io/badge/dbt-FF642E?style=for-the-badge&logo=dbt&logoColor=white" alt="dbt">
-<img src="https://img.//shields.io/badge/Apache_Airflow-017CEE?style=for-the-badge&logo=apache-airflow&logoColor=white" alt="Airflow">
-<img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-//badge&//logo=grafana&logoColor=white" alt="Grafana">
+<img src="https://img.shields.io/badge/Apache_Airflow-017CEE?style=for-the-badge&logo=apache-airflow&logoColor=white" alt="Airflow">
+<img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white" alt="Grafana">
 <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
 </p>
 
@@ -22,7 +22,7 @@ AtmosFlow is a high-performance, end-to-end data engineering ecosystem designed 
 ## 🏗️ System Architecture
 The pipeline is built on a decoupled, event-driven architecture to ensure high availability and horizontal scalability:
 
-```Mermaid
+```mermaid
 graph LR
     subgraph Ingestion Layer
         A[OpenWeatherMap API]
@@ -69,6 +69,25 @@ graph LR
 - **Orchestration**: Apache Airflow
 - **Visualization**: Grafana
 - **Infrastructure**: Docker & Docker Compose
+## 🧠 Key Engineering Challenges & Solutions
+
+As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
+
+### 1. The "Advertised Listener" Trap in Docker
+- **Challenge:** Producer failed to connect to Kafka due to `localhost` resolution errors inside the Docker network.
+- **Solution:** Implemented a **Dual-Listener configuration**. Defined `PLAINTEXT` for external host access and `PLAINTEXT_INTERNAL` for container-to-container communication, resolving the metadata mismatch.
+
+### 2. Database Boot-up Race Condition
+- **Challenge:** The Consumer crashed on startup because it attempted to connect to PostgreSQL before the database was fully initialized.
+- **Solution:** Developed a **Robust Retry Logic** with exponential backoff in the `WeatherDBClient`, ensuring the application gracefully waits for the DB to become available.
+
+### 3. Dependency Hell & Environment Isolation
+- **Challenge:** Severe version conflicts between `dbt-core` and `mashumaro` libraries on Windows.
+- **Solution:** **Containerized the dbt environment**. By running dbt inside a dedicated Docker container, I eliminated host OS dependency issues and ensured 100% reproducibility.
+
+### 4. Pipeline Orchestration
+- **Challenge:** Manual execution of dbt transformations is not scalable for production.
+- **Solution:** Integrated **Apache Airflow** to automate the dbt run process, transforming the pipeline from a manual script to a scheduled, production-ready workflow.
 # 📂 Project Structure
 ```Bash
 .
