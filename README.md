@@ -88,7 +88,7 @@ As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
 ### 4. Pipeline Orchestration
 - **Challenge:** Manual execution of dbt transformations is not scalable for production.
 - **Solution:** Integrated **Apache Airflow** to automate the dbt run process, transforming the pipeline from a manual script to a scheduled, production-ready workflow.
-# 📂 Project Structure
+## 📂 Project Structure
 ```Bash
 .
 ├── dbt_project/             # dbt models & configuration
