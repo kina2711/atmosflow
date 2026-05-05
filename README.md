@@ -91,24 +91,24 @@ As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
 ## 📂 Project Structure
 ```Bash
 .
-├── dbt_project/             # dbt models & configuration
+├── dbt_project/                    # dbt models & configuration
 │   ├── models/
-│   │   ├── sources.yml      # Raw table declarations
-│   │   ├── silver_weather.sql # Cleansing logic
-│   │   └── gold_daily_summary.sql # Aggregation logic
-│   └── dbt_project.yml      # Project settings
-├── producer/                # Python Producer (API -> Kafka)
-│   ├── main.py              # Ingestion logic
+│   │   ├── sources.yml             # Raw table declarations
+│   │   ├── silver_weather.sql      # Cleansing logic
+│   │   └── gold_daily_summary.sql  # Aggregation logic
+│   └── dbt_project.yml             # Project settings
+├── producer/                       # Python Producer (API -> Kafka)
+│   ├── main.py                     # Ingestion logic
 │   └── Dockerfile
-├── consumer/                # Python Consumer (Kafka -> DB)
-│   ├── main.py              # Batch loading logic
+├── consumer/                       # Python Consumer (Kafka -> DB)
+│   ├── main.py                     # Batch loading logic
 │   └── Dockerfile
-├── dags/                    # Airflow DAGs
-│   └── weather_transformation.py # Orchestration logic
-├── .dbt/                    # dbt profiles (connection settings)
+├── dags/                           # Airflow DAGs
+│   └── weather_transformation.py   # Orchestration logic
+├── .dbt/                           # dbt profiles (connection settings)
 │   └── profiles.yml
-├── docker-compose.yml       # Full stack orchestration
-└── .env.example             # Environment template
+├── docker-compose.yml              # Full stack orchestration
+└── .env.example                    # Environment template
 ```
 ## 🚀 Quick Start
 1. **Prerequisites**
