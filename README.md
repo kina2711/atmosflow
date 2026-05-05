@@ -13,7 +13,8 @@ AtmosFlow is a professional-grade real-time data pipeline designed to ingest, tr
 
 The platform follows a decoupled, event-driven architecture:
 
-```flowchart LR
+```Mermaid
+flowchart LR
     subgraph Ingestion Layer
         A[OpenWeatherMap API]
         B[Python Producer]
