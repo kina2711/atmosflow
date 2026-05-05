@@ -13,7 +13,35 @@ AtmosFlow is a professional-grade real-time data pipeline designed to ingest, tr
 
 The platform follows a decoupled, event-driven architecture:
 
-`OpenWeatherMap API` $\rightarrow$ `Python Producer` $\rightarrow$ `Apache Kafka` $\rightarrow$ `Python Consumer` $\rightarrow$ `PostgreSQL (Bronze)` $\rightarrow$ `dbt (Silver & Gold)` $\rightarrow$ `Grafana Dashboard`
+```flowchart LR
+    subgraph Ingestion Layer
+        A[OpenWeatherMap API]
+        B[Python Producer]
+    end
+
+    subgraph Streaming Layer
+        C[Apache Kafka]
+    end
+
+    subgraph Processing Layer
+        D[Python Consumer]
+    end
+
+    subgraph Storage Layer
+        E[PostgreSQL Bronze]
+    end
+
+    subgraph Transformation Layer
+        F[dbt Silver]
+        G[dbt Gold]
+    end
+
+    subgraph Visualization Layer
+        H[Grafana Dashboard]
+    end
+
+    A --> B --> C --> D --> E --> F --> G --> H
+```
 
 ### 🛠 Tech Stack & Justification
 - **Apache Kafka:** Used as a distributed message broker to decouple ingestion and storage, ensuring the system is fault-tolerant and can handle high-velocity streaming data.
@@ -30,8 +58,8 @@ The platform follows a decoupled, event-driven architecture:
 To optimize query performance for the dashboard, I implemented a three-layer data strategy:
 
 1. **Bronze Layer (`raw_weather`):** Ingests raw data directly from Kafka. It preserves the original state of the data for auditing and reprocessing.
-2. **Silver Layer (`silver_//weather`):** A cleansed view that handles data type casting, rounding, and removes NULL values, providing a "single source of truth."
-3. **Gold Layer (`gold_//daily_summary`):** A materialized table containing pre-aggregated metrics (Avg/Max/Min temperature) per city per day. This ensures the Grafana dashboard loads instantly regardless of data volume.
+2. **Silver Layer (`silver_weather`):** A cleansed view that handles data type casting, rounding, and removes NULL values, providing a "single source of truth."
+3. **Gold Layer (`gold_daily_summary`):** A materialized table containing pre-aggregated metrics (Avg/Max/Min temperature) per city per day. This ensures the Grafana dashboard loads instantly regardless of data volume.
 
 ---
 
@@ -40,20 +68,20 @@ To optimize query performance for the dashboard, I implemented a three-layer dat
 As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
 
 ### 1. The "Advertised Listener" Trap in Docker
-**Challenge:** Producer failed to connect to Kafka due to `localhost` resolution errors inside the Docker network.
-**Solution:** Implemented a **Dual-Listener configuration**. Defined `PLAINTEXT` for external host access and `PLAINTEXT_INTERNAL` for container-to-container communication, resolving the metadata mismatch.
+- **Challenge:** Producer failed to connect to Kafka due to `localhost` resolution errors inside the Docker network.
+- **Solution:** Implemented a **Dual-Listener configuration**. Defined `PLAINTEXT` for external host access and `PLAINTEXT_INTERNAL` for container-to-container communication, resolving the metadata mismatch.
 
 ### 2. Database Boot-up Race Condition
-**Challenge:** The Consumer crashed on startup because it attempted to connect to PostgreSQL before the database was fully initialized.
-**Solution:** Developed a **Robust Retry Logic** with exponential backoff in the `WeatherDBClient`, ensuring the application gracefully waits for the DB to become available.
+- **Challenge:** The Consumer crashed on startup because it attempted to connect to PostgreSQL before the database was fully initialized.
+- **Solution:** Developed a **Robust Retry Logic** with exponential backoff in the `WeatherDBClient`, ensuring the application gracefully waits for the DB to become available.
 
 ### 3. Dependency Hell & Environment Isolation
-**Challenge:** Severe version conflicts between `dbt-core` and `mashumaro` libraries on Windows.
-**Solution:** **Containerized the dbt environment**. By running dbt inside a dedicated Docker container, I eliminated host OS dependency issues and ensured 100% reproducibility.
+- **Challenge:** Severe version conflicts between `dbt-core` and `mashumaro` libraries on Windows.
+- **Solution:** **Containerized the dbt environment**. By running dbt inside a dedicated Docker container, I eliminated host OS dependency issues and ensured 100% reproducibility.
 
 ### 4. Pipeline Orchestration
-**Challenge:** Manual execution of dbt transformations is not scalable for production.
-**Solution:** Integrated **Apache Airflow** to automate the dbt run process, transforming the pipeline from a manual script to a scheduled, production-ready workflow.
+- **Challenge:** Manual execution of dbt transformations is not scalable for production.
+- **Solution:** Integrated **Apache Airflow** to automate the dbt run process, transforming the pipeline from a manual script to a scheduled, production-ready workflow.
 
 ---
 
