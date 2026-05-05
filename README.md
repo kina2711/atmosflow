@@ -89,26 +89,43 @@ As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
 - **Challenge:** Manual execution of dbt transformations is not scalable for production.
 - **Solution:** Integrated **Apache Airflow** to automate the dbt run process, transforming the pipeline from a manual script to a scheduled, production-ready workflow.
 ## 📂 Project Structure
-```Bash
+```
 .
-├── dbt_project/                    # dbt models & configuration
-│   ├── models/
-│   │   ├── sources.yml             # Raw table declarations
-│   │   ├── silver_weather.sql      # Cleansing logic
-│   │   └── gold_daily_summary.sql  # Aggregation logic
-│   └── dbt_project.yml             # Project settings
-├── producer/                       # Python Producer (API -> Kafka)
-│   ├── main.py                     # Ingestion logic
-│   └── Dockerfile
-├── consumer/                       # Python Consumer (Kafka -> DB)
-│   ├── main.py                     # Batch loading logic
-│   └── Dockerfile
-├── dags/                           # Airflow DAGs
-│   └── weather_transformation.py   # Orchestration logic
-├── .dbt/                           # dbt profiles (connection settings)
-│   └── profiles.yml
-├── docker-compose.yml              # Full stack orchestration
-└── .env.example                    # Environment template
+├── dbt_project/                        # [Analytics Engineering] Transformation Layer
+│   ├── models/                         # Modular SQL models for data transformation
+│   │   ├── sources.yml                 # Source declarations (Bronze Layer: raw_weather table)
+│   │   ├── silver_weather.sql          # Silver Layer: Data cleansing, type casting, and normalization (View)
+│   │   └── gold_daily_summary.sql      # Gold Layer: Business-level aggregations for KPIs (Table)
+│   └── dbt_project.yml                 # dbt project configuration and model materialized settings
+│
+├── producer/                           # [Data Ingestion] Real-time API to Kafka Stream
+│   ├── __init__.py                     # Package initialization
+│   ├── requirements.txt                # Dependencies: requests, kafka-python, loguru
+│   ├── config.py                       # Configuration management (API keys, Broker settings)
+│   ├── kafka_client.py                 # Kafka Producer wrapper with connection retry logic
+│   ├── weather_api.py                  # API client for OpenWeatherMap with Data Contract enforcement
+│   ├── main.py                         # Execution entry point: Polling API -> Publishing to Kafka
+│   └── Dockerfile                      # Containerization for consistent deployment
+│
+├── consumer/                           # [Data Loading] Kafka Stream to Database
+│   ├── __init__.py                     # Package initialization
+│   ├── requirements.txt                # Dependencies: psycopg2-binary, kafka-python, loguru
+│   ├── config.py                       # Database and Kafka connection settings
+│   ├── db_client.py                    # Database wrapper implementing high-performance Batch Inserts
+│   ├── kafka_consumer.py               # Kafka Consumer logic with Group ID and Offset management
+│   ├── main.//py                       # Execution entry point: Poll Kafka -> Batching -> Load to Postgres
+│   └── Dockerfile                      # Containerization for scalable data loading
+│
+├── dags/                               # [Orchestration] Workflow Automation
+│   └── weather_transformation.py       # Airflow DAG: Schedules and triggers dbt transformations
+│
+├── .dbt/                               # [Environment Config] dbt connectivity settings
+│   └── profiles.yml                    # Database credentials and target profiles for dbt
+│
+├── docker-compose.yml                  # [Infrastructure] Full-stack orchestration of all services
+│                                       # (Zookeeper, Kafka, Postgres, Airflow, Grafana, Kafka-UI)
+│
+└── .env.example                        # [Security] Environment variable template for secure deployment
 ```
 ## 🚀 Quick Start
 1. **Prerequisites**
@@ -136,6 +153,7 @@ As a Data Engineer, I focused on solving real-world infrastructure bottlenecks:
 1. **Live Database Snapshot**
     
     You can explore the laetest state of the database through the interactive snapshot below:
+
     👉 [Explore AtmosFlow Database Snapshot](https://www.google.com/url?sa=E&q=https%3A%2F%2Fsnapshots.raintank.io%2Fdashboard%2Fsnapshot%2FVC33VGnyscctS43AZj6D83yxUK8Uk8EM)
 2. **System Observability**
     - **Kafka UI**: http://localhost:8080 (Monitor topic offsets & message flow)
